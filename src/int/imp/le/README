@@ -1,0 +1,45 @@
+                DATA ORGNIZATION IN LITTLE ENDIAN
+
+suppose we have 64bit number 0x1020304050607080, it is properties are:
+1: least significant byte is 0x80.
+2: most significant byte is 0x10.
+3: least significant byte is at lowest memory address.
+4: most significant byte is at highest memory address.
+
+in mathx integer types:
+1: least significant component is at lowest array index (i.e. 0).
+2: most significant component is at highest array index (i.e. array_size - 1).
+
+we say component and not byte because you can use primitive types as small as
+a byte or as big as 32bit integer.
+
+next is a diagram of the number 0x1020304050607080 as in little endian-machine memory:
+
+-----------------------------------------
+| 0  | 1  | 2  | 3  | 4  | 5  | 6  | 7  | array index
+-----------------------------------------
+| 80 | 70 | 60 | 50 | 40 | 30 | 20 | 10 | array value
+-----------------------------------------
+
+-----------------------------------------
+| 10 | 20 | 30 | 40 | 50 | 60 | 70 | 80 | numeric value      memory
+-----------------------------------------                    | .. |
+  |    |    |    |    |    |    |    |                       | .. |
+  |    |    |    |    |    |    |    |                       |----|
+  |    |    |    |    |    |    |    |---------------------> | 80 |  address
+  |    |    |    |    |    |    |                            |----|
+  |    |    |    |    |    |    |--------------------------> | 70 |  address + 1
+  |    |    |    |    |    |                                 |----|
+  |    |    |    |    |    |-------------------------------> | 60 |  address + 2
+  |    |    |    |    |                                      |----|
+  |    |    |    |    |------------------------------------> | 50 |  address + 3
+  |    |    |    |                                           |----|
+  |    |    |    |-----------------------------------------> | 40 |  address + 4
+  |    |    |                                                |----|
+  |    |    |----------------------------------------------> | 30 |  address + 5
+  |    |                                                     |----|
+  |    |---------------------------------------------------> | 20 |  address + 6
+  |                                                          |----|
+  |--------------------------------------------------------> | 10 |  address + 7
+                                                             |----|
+                                                             | .. |

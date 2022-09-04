@@ -1,0 +1,121 @@
+====================
+ABOUT
+====================
+
+MathX is a fixed-length arithmetic-types library developed using pure C++.
+
+MathX main components are:
+  int_t   : represent signed integer with little- and big-endian layout.
+  uint_t  : represent unsigned integer with little- and big-endian layout.
+  float_t : represent float-point based on IEEE 754-2008 standard.
+  fixed_t : represent fixed-point type.
+
+However certain types still in development and other not yet implemented.
+
+Refer to VERSION file for types in specific release.
+
+
+====================
+WHY MATHX
+====================
+
+* Purity
+  Our Model is No Assembly, No C, No Dynamic Allocation.
+  Code obey C++03 strict rules (No gray area).
+  No compiler-specific implementation. The code run with most compilers.
+  No usage of any library.
+  Limited usage of standard library (numeric_cast and some functions for float-point conversions).
+
+* Flexibility
+  All major types have simple interface.
+  You can replace part/all of default implementation with your own.
+
+* Speed
+  Lots of code will be optimized at compile time, thanks to templates.
+  Using pure c++ MathX use data types as big as processor register.
+
+* Integration
+  Enable/Disable STL integration.
+  Enable/Disable built-in float-point conversion.
+  All MathX types can be converted from/to primitive types.
+
+* Architecture
+  Specify number of bits per one byte (for non-octet systems).
+  With any integer type you can initialize all library types.
+  Target Little-endian and Big-Endian layout for integer types.
+
+* Test
+  Many test cases covers all main types.
+  A test framework designed for MathX.
+  Multiple Compilers used to compile and verify code correction.
+  Multiple Platforms used to verify same test result.
+
+* Mathematics
+  Many mathematical functions to work with all major types.
+
+
+====================
+LIMITATION
+====================
+
+MathX only compiles in a platform with the following specifications:
+
+1- Number of bits per one byte must be a power of 2 e.g.
+   CHAR_BIT == 4, 8, 16... // PASS
+   CHAR_BIT == 3, 5, 9...  // FAIL
+
+2- Signed number must uses 2s complement e.g.
+    -10 = 0xF6 // PASS
+    -10 = ?    // FAIL
+
+3- Integer types only accept power of 2 bit size.
+
+====================
+CONFIGURATION
+====================
+
+The header file "mathx_config.hpp" contains options that you may edit to suit your needs.
+
+Advanced configuration exists throw "src/common/helper/startup_pre.hpp" and "src/common/helper/startup_post.hpp" header files,
+change them with caution.
+
+
+====================
+HOW TO USE
+====================
+
+Refer to help documentation in doc directory.
+
+
+====================
+COMPILERS
+====================
+
+MathX will compile with any C++03\C++11 compatible compiler.
+
+compilers used for testing:
+    Microsoft Visual C++ 2008 SP1
+    Intel C++ XE 13.1
+    GCC 4.8.1
+    Clang 3.3
+
+
+====================
+PLATFORMS
+====================
+
+Some types change layout with architecture, and because of that we have to test MathX
+using 32-bit Operating system in 2 architecture:
+
+For 32bit Little Endian: (main development)
+    Microsoft Windows [XPSP3]
+
+For 32bit Big Endian:
+    Linux PowerPC [LUbuntu 12.04]
+
+
+====================
+DEVELOPEMENT
+====================
+
+Track development changes at mathx2.sourceforge.net

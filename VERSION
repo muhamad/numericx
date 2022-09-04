@@ -1,0 +1,9 @@
+version 0.1a1
+    initial release
+
+IN THIS RELEASE
+  * int_t/uint_t implementation completed for little-endian systems.
+  * numeric_cast implementation completed for little-endian systems.
+  * string_cast implementation completed for little-endian systems.
+  * numeric_limits for int_t/uint_t completed.
+  * you can initialize int_t/uint_t from 16B to 256MB, however with bigger types you need bigger stack.

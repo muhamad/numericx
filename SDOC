@@ -1,0 +1,518 @@
+                        MATHX SIMPLE DOCUMENTATION
+
+The full documentation is still in progress, so to be able to use MathX, use this guidlines.
+
+
+INTRODUCTION
+
+In MathX there 2 category of types:
+    1- numeric types.
+    2- cast types.
+
+numeric types: are the template classes the we use initiate certin types,  e.g. int_t used to initiate int128_t with 128bits,
+               and uint_t used to initiate uint1024_t with 1024bits.
+               there is other types such as float_t and fixed_t but they development started after the release of version 1.0.0
+
+cast types: are template classes used to convert types between each others and they are two:
+    I- numeric_cast.
+   II- string_cast.
+
+numeric_cast: used to convert numeric type to another where numeric types are all fundamental type and MathX types.
+              numeric_cast takes a types and value and return the result value, its syntax:
+
+              out_type out_value = numeric_cast<in_type>(in_value);
+
+              you must identify out_type of numeric_cast in whatever way you want, you can use specifiy out_type using
+              old style cast e.g:
+
+              int128_t a = 1024 * 3;
+              int b = numeric_cast<int128_t>(a); // --> one way to do it
+              (int)numeric_cast<int128_t>(a); // --> another way
+
+string_cast: used to convert from MathX types from/to string using base, this class we will take about it later.
+
+
+SOURCE DIRECTORY
+
+the src directory contains the following directories:
+    base: contains MathX major types and thier inline code.
+
+    cast: contains numeric_cast and string_cast implementation.
+
+    common: contains the following directories
+        helper: contains shared code that used throw all library.
+        info: contains type system to identify all types used by MathX.
+
+    int: contains the following directories
+        imp: int_t/uint_t implementations for little- big-endian
+        cc: short for common cast and contains code shared by integer numeric/string cast.
+        nc: numeric_cast helper types for int_t/uint_t.
+        sc: string_cast helper types for int_t/uint_t.
+
+    math: mathematical library with implementation.
+
+    stl: STL implementation.
+
+
+TYPE OPERATIONS
+
+MathX types uses what we call a contract in that we group all similar functions in a class then implement the code for that group and pass
+it to the type to use it.
+
+for int_t/uint_t there is 5 group of functions:
+    1- range function: are used to specify limit of values used by int_t/uint_t initiations.
+    2- bitwise functions: bit_and, bit_op, bit_neg, bit_xor.
+    3- logic functions: and, or, not, eq, neq, lt, leq, gt, geq.
+    4- arithmetic functions: add, inc, sub, dec, mul, div, mod, lsh, rsh.
+    5- metadata constants: are constants used to give you information about an initiation.
+
+all this groups are passed to int_t/uint_t along with number of bits and some other types to make the initiation able to function properly.
+
+inside int_t/uint_t there is 3 sections:
+    1- basic types: are the fundamental types we use them for all the work.
+    2- input groups: with names range, bitwise, logic, arithmetic and metadata, you may use them to access a function directly.
+    3- overloaded operators: make you use int_t/uint_t as you use fundamental types.
+
+you can see the declaration of integer contract in src/base/int_contract.hpp
+
+LET'S START
+
+here is an example on how to do basic operation using overloaded operators:
+
+#include <mathx.hpp>
+using mathx::uint128_t;
+
+int main()
+{
+    uint128_t a = 1024, b = 0;
+    bool r;
+
+    //   Addition
+    a = a + 500;
+    a += 100; // uint128_t::arithmetic::add(100);
+
+    //   increment
+    ++a; // uint128_t::arithmetic::inc(a);
+
+    //   subtraction
+    a = a - 13;
+    a -= 17; // uint128_t::arithmetic::sub(17);
+
+    //   decrement
+    --a; // uint128_t::arithmetic::dec(a);
+
+    //   multiplication
+    a = a * 13;
+    a *= 17; // uint128_t::arithmetic::mul(17);
+
+    //   division
+    a = a / 8;
+    a /= 2; // uint128_t::arithmetic::div(2);
+
+    //   modulus
+    a = a % 123456789;
+    a %= 3365478; // uint128_t::arithmetic::od(3365478);
+
+    //   left shift
+    a = a >> 10;
+    a >>= 3; // uint128_t::arithmetic::right_shift(3);
+
+    //   right shift
+    a = a << 3;
+    a <<= 12;  // uint128_t::arithmetic::left_shift(12);
+
+    //   bitwise and
+    a = a & a;
+    a &= a; // uint128_t::bitwise::and_op(a);
+
+    //   bitwise or
+    a = a | a;
+    a |= a; // uint128_t::bitwise::or_op(a);
+
+    //   bitwise xor
+    a = a ^ a;
+    a ^= a; // uint128_t::bitwise::xor_op(a);
+
+    //   bitwise negation
+    a = ~a;  // uint128_t::bitwise::neg_op(a);
+
+    //   logic and
+    r = a && b; // uint128_t::logic::and_op(a, b);
+
+    //   logic or
+    r = a || b; // uint128_t::logic::or_op(a, b);
+
+    //   logic not
+    r = !a; // uint128_t::logic::not_op(a);
+
+    //   logic equal-to
+    r = a == b; // uint128_t::logic::equal(a, b);
+
+    //   logic not-equal-to
+    r = a != b; // uint128_t::logic::not_equal(a, b);
+
+    //   logic less-than
+    r = a < b; // uint128_t::logic::less_than(a, b);
+
+    //   logic less-than-or-equal
+    r = a <= b; // uint128_t::logic::less_than_equal(a, b);
+
+    //   logic greater-than
+    r = a > b; // uint128_t::logic::greater_than(a, b);
+
+    //   logic greater-than-or-equal
+    r = a >= b; // uint128_t::logic::greater_than_equal(a, b);
+}
+
+to convert between numeric types:
+
+#include <mathx.hpp>
+using mathx::uint128_t;
+using mathx::int512_t;
+using mathx::numeric_cast;
+
+#include <iostream>
+using std::cout;
+using std::hex;
+
+int main()
+{
+    uint128_t a;
+    uint128_t::range::set_max(a);
+
+    int512_t b = numeric_cast<uint128_t>(a);
+    b >>= 65;
+
+    unsigned long long int c = numeric_cast<int512_t>(v);
+    cout << hex << c; // should be 7fffffffffffffff
+}
+
+
+STRING CONVERSION
+
+string conversion accomplished using string_cast template class, where its prototype is:
+
+    template<typename num_type, typename str_type, typename base_type> string_cast;
+
+where
+    1- num_type: is an initiation of any MathX numeric type, in this case int_t/uint_t initiations.
+    2- str_type: is a type you can define as string and for now the library define 2 groups of it:
+        I- type*: which is pointer to fundamental type, e.g. char*, whcar_t*, int* ... etc.
+       II- basic_string: which is the base class for all strings in STL, any initiation from it can be used
+                         as string type as long as the charT argument is a fundamental type.
+                         even we say fundamental type for now only char and wchar_t are supported, more
+                         types will be added in the future (which is easy BTW).
+    3- base_type: called base_t and it is the type that used a base to convert numeric value to its characters
+                  and vice versa. this type is the core of the string conversions because it is what provide
+                  access to letters, symbols, validate them and convert them for letter to numbers and vice vera.
+                  this type is built upon other types so if you want to create new base it would be easy, this
+                  type will explained later.
+
+string_cast have 3 functions:
+    1- length: return number of characters needed to store input numeric value into str_type, the count not included
+               any special characters in that if the str_type is e.g. char* the null character is not included an it is
+               your responsibility to put it. this function always return value more than zero.
+    2- from: convert input string to num_type for input base_type and return true if conversion OK, false otherwise.
+             the only reason this function should fail is to have not supported base characters in input string.
+    3- to: convert numberic value to str_type, the default character case is lower however if you want to specify the character
+           case there is another version that you can use.
+           if this function failed it return false, otherwise OK.
+
+the base_t class declaration looks lie:
+
+    template<cs_t bv, typename charT, template<typename> class letterT, typename customT>
+
+the bv is the base value, and charT is the character type the base work with.
+for now ignore letterT and customT.
+
+the base_t defined for bases 2, 8, 10 and 16 with any character data-type.
+
+here is string conversion example:
+
+#include <mathx.hpp>
+using mathx::int128_t;
+using mathx::string_cast;
+using mathx::base_t;
+
+#include <iostream>
+#include <string>
+using std::cout;
+using std::string;
+
+int main()
+{
+	int128_t n = ~0ull;
+	
+	string s;
+
+	string_cast<int128_t, string, base_t<2> >::to(s, n);
+	cout << "base2: " << s << "\n";
+
+	string_cast<int128_t, string, base_t<8> >::to(s, n);
+	cout << "base8: " << s << "\n";
+
+	string_cast<int128_t, string>::to(s, n);
+	cout << "base10 implicit: " << s << "\n";
+
+	string_cast<int128_t, string, base_t<10> >::to(s, n);
+	cout << "base10 explicit: " << s << "\n";
+
+	string_cast<int128_t, string, base_t<16> >::to(s, n);
+	cout << "base16: " << s << "\n";
+}
+
+you must've noticed that default base is 10, hoever if you used str_type with character type
+other than char then you have to specify it explicity.
+
+	int128_t n = ~0ull;
+	wstring s;
+
+	string_cast<int128_t, wstring, base_t<10, wchar_t> >::to(s, n);
+	//----------------------------------------^
+	wcout << "base10: " << s << "\n";
+
+
+STRING BASE
+
+the base_t class declaration is:
+
+template<cs_t bv, typename charT, template<typename> class letterT, typename customT>
+struct base_t
+{
+	typedef charT char_t;
+	typedef letterT<charT> letter;
+	typedef customT custom;
+
+	static const cs_t base;
+	static const bool is_specialized;
+
+	inline static bool check(const char_t);
+
+	inline static cs_t char_to_digit(const char_t);
+
+	inline static char_t digit_to_char(const cs_t d, const bool u);
+};
+
+where:
+    1- char_t is the character data-type that base work with.
+    2- letter is a set of letters used by predefined bases during conversions.
+    3- custom is a types with information about custom base.
+    4- base is value of a base.
+    5- is_specialized is value to determine is a base defined by MathX or by the user.
+    6- check takes input letter and return true if it belong to the base, false otherwsie.
+    7- char_to_digit takes a character and return it value in base or -1 if character don't belong in base.
+    8- digit_to_char takes a digit and character case and return the request character in case, return null character
+                     if input value is beyond base.
+
+using the information base_t, we can put bases into 3 categories:
+  1- predefined bases: which are common bases i.e. 2, 8, 10 and 16.
+  2- simple bases: which you define using set of classes we made for you.
+  3- custom bases: which you create from scratch.
+
+
+1- predefined bases
+
+we put all letters we want into letter_t class, and by them we can convert to all common bases.
+letter_t declaration is:
+
+template<typename charT>
+struct letter_t
+{
+	typedef charT char_t;
+	
+	static const char_t zero;
+	static const char_t one;
+	static const char_t two;
+	static const char_t three;
+	static const char_t four;
+	static const char_t five;
+	static const char_t six;
+	static const char_t seven;
+	static const char_t eight;
+	static const char_t nine;
+
+	static const char_t hex_a;
+	static const char_t hex_b;
+	static const char_t hex_c;
+	static const char_t hex_d;
+	static const char_t hex_e;
+	static const char_t hex_f;
+
+	static const char_t hex_A;
+	static const char_t hex_B;
+	static const char_t hex_C;
+	static const char_t hex_D;
+	static const char_t hex_E;
+	static const char_t hex_F;
+
+	static const char_t float_e;
+	static const char_t float_E;
+
+	static const char_t comma;
+	static const char_t dot;
+	static const char_t plus;
+	static const char_t minus;
+
+	inline static bool is_whitespace(char_t);
+};
+
+the letter_t takes a character data-type to define the letters with.
+
+where:
+  1- char_t: is the character data-type.
+  2- zero-nine: are letters to define 0 to 9 respectively, not that if we takes the charater six
+                and we add the number two we must get the character eight.
+  3- hex_a-hex_f: are base16 lower case characters, those letters must be consecutive.
+  4- hex_A-hex_F: same as above, but those are upper case characters.
+  5- float_e, float_E; are float-point scientific e in lowe and upper cases respectively.
+  6- comma, dot,plus, minus: are symbols with same name.
+  7- is_whitespace: check if input character is whitespace.
+
+when base is a predefined base this class is only used to get base letter.
+
+
+2- simple bases
+
+what happended if you want to a base that is not defined?
+eventually we think that you might need that so instead of letting you do all that work we did it for you,
+and all what you need to do is to write a base class and set the custom member to custom_t initiation.
+
+to understand custom_t class, let's ask take closer look at the predefined base16.
+
+base16 don't have a sign, so the base10 number -70 is BA in base16, so where is the sign?
+Well, base16 don't separate the sign bit from the rest of it.
+
+So, what if you to have base16 with sign? that's when custom_t class become valuable.
+
+note: the base10 -70 in signed base16 is -46.
+
+the custom_t class look like:
+
+template<bool hs, bool ss>
+struct custom_t
+{
+	static const bool have_sign = hs;
+	static const bool show_sign = ss;
+};
+
+where:
+   1- have_sign: when true the sign bit will be separated from the rest before converting.
+   2- show_sign: if have_sign is false it has no effect, otherwise if num_type is signed and the value
+                 less than zero, then the sign will printed.
+
+for simple bases the symbols from letter_t are used.
+
+here is what signed base16 might look like:
+
+using mathx::cs_t;
+using mathx::letter_t;
+using mathx;;custom_t;
+
+template<typename charT>
+struct base16
+{
+	typedef charT char_t;
+	typedef letter_t<charT> letter;
+	typedef custom_t<true, true> custom;
+
+	static const cs_t base = 16;
+	static const bool is_specialized = true;
+
+	inline static bool check(const char_t c)
+	{
+        return
+        (c >= char_t('0') && c <= char_t('9')) ||
+        (c >= char_t('A') && c <= char_t('F')) ||
+        (c >= char_t('a') && c <= char_t('f'));
+	}
+
+	inline static cs_t char_to_digit(const char_t c)
+	{
+		if (c >= char_t('0') && c <= char_t('9')) return c - char_t('0');
+		if (c >= char_t('A') && c <= char_t('F')) return c - char_t('A') + 10;
+		if (c >= char_t('a') && c <= char_t('f')) return c - char_t('a') + 10;
+		
+		return -1;
+	}
+
+	inline static char_t digit_to_char(const cs_t d, const bool u)
+	{
+		if (d < 0 || d >= base) return char_t(0);
+
+		if (u) return char_t("0123456789ABCDEF"[d]);
+		return char_t("0123456789abcdef"[d]);
+	}
+};
+
+and example
+
+int main()
+{
+    int128_t n = -70;
+    string s;
+
+    string_cast<int128_t, string, base_t<16> >::to(s, n);
+    cout << "predefined hex: " << s << "\n";
+
+    string_cast<int128_t, string, base16<char> >::to(s, n);
+    cout << "signed hex: " << s << "\n";
+}
+
+the result:
+predefined hex: ffffffffffffffffffffffffffffffba
+signed hex: -46
+
+the negative result you see is the tows complement for the signed value with sign showed.
+if the result you expected was -3A then you are in luck because this option will be added soon,
+this option called raw_signed, which mean we execlude the sign bit from the rest then we interpret
+them as they are.
+
+you will find a base named alphnum_base in mathx::imp that work with all digits and letter it can
+represent bases from 2 to 36.
+
+
+3- custom bases
+
+what if you want to have a base that don't fall into those categories?
+in this case forget about base class and go implement your own string_cast and in this case
+the base_type argument will work as a type tag that when used the compiler will call your
+string_cast. e.g. the roman numeral can not work with base_t classes so here is what you will do:
+
+
+A- create a tag class to be used as replacment for the base
+
+    struct roman_base {};
+
+B- create a class with methods as the ones found in string_cast.
+
+    template<typename num_type, typename str_type>
+    struct roman_convertor
+    {
+      inline static mathx::cs_t length(const num_type& n);
+
+      inline static bool from(const str_type& s, num_type& n);
+
+      inline static bool to(str_type& s, const num_type& n);
+      inline static bool to(str_type& s, const num_type& n, bool upper);
+    };
+
+you can use classes in MathX::meta namespace to determine type of num_type and str_type.
+
+C- create a specialization from string_cast for specified numeric type:
+
+    namespace mathx
+    {
+        template<cu_t bits_count, typename ut_t, typename st_t, typename udt_t, typename sdt_t,
+                 template <typename> class range_t, template <typename> class bitwise_t,
+                 template <typename> class logic_t, template <typename> class arithmetic_t,
+                 template <typename> class meta_t, typename charT>
+        struct string_cast
+        < int_t<bits_count, ut_t, st_t, udt_t, sdt_t, range_t, bitwise_t, logic_t, arithmetic_t, meta_t>, charT*, roman_base>
+        : public roman_convertor< int_t<bits_count, ut_t, st_t, udt_t, sdt_t, range_t, bitwise_t, logic_t, arithmetic_t, meta_t>, charT* >
+        {};
+    }
+
+this string_cast definition is for roman_base and any null-terminated string.
+
+you can not create a string_cast definition for all numeric types and string types because that will match the original definition and
+that will confuse the compiler about which one to use.
